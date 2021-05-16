@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+		<title>Document</title>
+		<!-- <link rel="stylesheet" href="../layui-v2.5.5/layui/css/layui.css" media="all"> -->
+		<style type="text/css">
+			.imglist img{
+				display: block;
+				width: 200px;
+
+			}
+		</style>
+	</head>
+
+	<body>
+		<div class="imglist">
+			<img src="./loading.gif" data-src="./img-1.jpg" >
+			<img src="./loading.gif" data-src="./img-2.jpg">
+			<img src="./loading.gif" data-src="./img-3.jpg">
+			<img src="./loading.gif" data-src="./img-4.jpg">
+			<img src="./loading.gif" data-src="./img-5.jpg">
+			<img src="./loading.gif" data-src="./img-1.jpg">
+			<img src="./loading.gif" data-src="./img-2.jpg">
+			<img src="./loading.gif" data-src="./img-3.jpg">
+			<img src="./loading.gif" data-src="./img-4.jpg">
+			<img src="./loading.gif" data-src="./img-5.jpg">
+			
+		</div>
+		<script type="text/javascript">
+			window.onload = function(){
+				// 获取图片列表，即img标签列表
+				var imgs = document.querySelectorAll('img');
+				// 获取到浏览器顶部的距离
+				function getTop(e){
+					return e.offsetTop;
+				}
+				// 懒加载实现
+				function lazyLoad(imgs){
+					//可视区域高度
+					var h = window.innerHeight;
+					// console.log(h);
+					//滚动区域高度
+					var s = document.documentElement.scrollTop || document.body.scrollTop;
+					// console.log(s);
+					for(var i = 0; i < imgs.length; i++){
+						//图片距离顶部的距离大于可视区域和滚动区域之和时懒加载
+						if((h+s) > getTop(imgs[i])){
+							// 真实情况是页面开始有2秒空白，所以使用setTimeout定时2s
+							(function(i){
+								setTimeout(function(){
+									var temp = new Image();
+									temp.src = imgs[i].getAttribute('data-src');
+									temp.onload = function(){
+										imgs[i].src = imgs[i].getAttribute('data-src')
+									}
+								},1000)
+							}(i))
+						}
+					}
+				}
+				lazyLoad(imgs)
+				window.addEventListener('scroll',function(){
+					console.log(1);
+					throttle(lazyLoad(imgs),200)
+				});
+				//节流
+				function throttle(fn,delay){
+					let timer = null;
+					return function(...args){
+						if(!timer){
+							timer = setTimeout(() => {
+								timer = null;
+								fn.apply(this,args)
+							}, delay);
+						}
+					}
+				}
+			}
+		</script>
+	</body>
+
+</html>
